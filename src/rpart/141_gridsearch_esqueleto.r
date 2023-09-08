@@ -124,7 +124,7 @@ cat(
 for (vmax_depth in c(4, 6, 8, 10, 12, 14)) {
   for (vmin_split in c(1000, 800, 600, 400, 200, 100, 50, 20, 10)) {
     for (vmin_bucket in c(5, 10, 15, 20)) {
-      for (vcp in c(-0.5, -0.4, -0.3, -0.2, -0.1)) {
+      for (vcp in c(-0.50)) {
         # notar como se agrega
 
         # vminsplit minima cantidad de registros en un nodo para hacer el split

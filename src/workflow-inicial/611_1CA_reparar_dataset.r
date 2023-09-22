@@ -1,10 +1,14 @@
-Experimentos Colaborativos Default
+#Experimentos Colaborativos Default
 # Workflow  Catastrophe Analysis
 
 # limpio la memoria
 rm(list = ls(all.names = TRUE)) # remove all objects
 gc(full = TRUE) # garbage collection
 install.packages("mice")
+# Cargar la librería dplyr
+library(dplyr)
+# Luego puedes usar el operador %>%
+
 require("data.table")
 require("yaml")
 require("mice")
@@ -12,6 +16,8 @@ require("mice")
 PARAM <- list()
 PARAM$experimento <- "CA6110prueba"
 PARAM$dataset <- "./datasets/competencia_2023.csv.gz"
+
+glimpse(competencia_2023.csv.gz)
 
 # valores posibles
 #  "MachineLearning"  "EstadisticaClasica" "Ninguno"
@@ -207,10 +213,31 @@ Corregir_MachineLearning <- function(dataset) {
   dataset[foto_mes == 202006, cmobile_app_trx := NA]
 }
 #------------------------------------------------------------------------------
-Corregir_Regresionlineal <- function(dataset) {
-  mice_output<-mice(dataset%>%select(thomebanking,202005), m = 1, maxit = 1, method = "norm.nob", seed = 700561))
-dataset[, thomebanking := mice_output$thomebanking]  # Reemplaza 'thomebanking' con los valores imputados
+# Función para corregir variables rotas usando regresión lineal
+Corregir_Regresionlineal <- function(dataset, variable, fecha) {
+  # Verificar si las columnas existen en el conjunto de datos
+  if (all(c(variable, fecha) %in% colnames(dataset))) {
+    # Realizar la imputación usando el paquete 'mice'
+    imputed_data <- mice(dataset %>% select(variable, fecha), m = 1, maxit = 1, method = "norm.nob", seed = 700561)
+    
+    # Reemplazar los valores faltantes en el conjunto de datos original con los valores imputados
+    dataset[is.na(dataset[, variable]), variable] <- complete(imputed_data)[, variable]
+  } else {
+    stop(paste("Las columnas", variable, "y/o", fecha, "no existen en el conjunto de datos."))
+  }
+  
+  return(dataset)
 }
+
+# Lista de variables y fechas para corregir
+variables <- c("thomebanking", "chomebanking_transacciones", "tcallcenter", "ccallcenter_transacciones")
+fechas <- c(201801, 201910, 202006)
+
+# Corregir cada par de variables y fechas
+for (i in seq_along(variables)) {
+  dataset <- Corregir_Regresionlineal(dataset, variables[i], fechas[i])
+}
+
 
 #------------------------------------------------------------------------------
 # Aqui empieza el programa

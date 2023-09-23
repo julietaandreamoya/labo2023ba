@@ -7,7 +7,7 @@ require("rpart")
 require("rpart.plot")
 
 # Aqui se debe poner la carpeta de la materia de SU computadora local
-setwd("X:\\gdrive\\austral2023ba\\") # Establezco el Working Directory
+setwd("~/buckets/b1/") # Establezco el Working Directory
 
 # cargo el dataset
 dataset <- fread("./datasets/dataset_pequeno.csv")
@@ -24,7 +24,7 @@ modelo <- rpart(
         cp = -0.416059129394517, # esto significa no limitar la complejidad de los splits
         minsplit = 638, # minima cantidad de registros para que se haga el split
         minbucket = 314, # tamaño minimo de una hoja
-        maxdepth = 38
+        maxdepth = 8
 ) # profundidad maxima del arbol
 
 
